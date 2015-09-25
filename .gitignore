@@ -1,0 +1,9 @@
+warlight2_bot/_build
+/deps
+erl_crash.dump
+*.ez
+*.txt
+*.beam
+*.zip
+test.exs
+*.zip
