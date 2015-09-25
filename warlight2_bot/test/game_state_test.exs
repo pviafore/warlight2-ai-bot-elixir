@@ -58,7 +58,6 @@ defmodule GameStateTest do
 
    GameStateTestMacro.test_state "should set superregions", :map, :set_super_regions, [["1",2], ["3", 4]], %{} |> make_super_region("1", 2) |> make_super_region("3", 4), [["1",2],["3",4],["5",6]], %{} |> make_super_region("1", 2) |> make_super_region("3", 4) |>make_super_region("5", 6)
 
-
    test "setting regions creates ownership and regions" do
      state = GameState.initial
           |> GameState.set_super_regions([["1", 2], ["3", 4]])
