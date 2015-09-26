@@ -45,9 +45,23 @@ defmodule CustomStrategy do
 
    end
 
+
+
+   defp super_region_sort_func(state) do
+
+     fn
+      elem1, elem2 ->
+         cond do
+            length(state.map[elem1].regions) != length(state.map[elem2].regions) -> length(state.map[elem2].regions) >= length(state.map[elem1].regions)
+            true ->state.map[elem1].bonus_armies >= state.map[elem2].bonus_armies
+         end
+     end
+   end
+
    defp pick_starting areas, state do
       super_regions = areas |> Enum.map &(get_super_region &1, state)
-      Enum.max_by super_regions, &(state.map[&1].bonus_armies)
+      List.first Enum.sort(super_regions, super_region_sort_func(state))
+
    end
 
    def recv outputter do
