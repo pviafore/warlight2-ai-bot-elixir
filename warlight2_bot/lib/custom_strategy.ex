@@ -41,26 +41,32 @@ defmodule CustomStrategy do
    end
 
    defp get_super_region(region, state) do
-       elem( (Enum.find state.map, &(region in elem(&1, 1).regions)), 0)
+       {region, elem( (Enum.find state.map, &(region in elem(&1, 1).regions)), 0)}
 
    end
 
+   defp get_number_of_wastelands(state, super_region) do
+      regions = state.map[super_region].regions
+      Enum.filter((Enum.map regions, &(elem(state.ownership[&1], 1))), &(&1 == 6))
+
+   end
 
 
    defp super_region_sort_func(state) do
 
      fn
-      elem1, elem2 ->
+      {reg1, super1}, {reg2, super2} ->
          cond do
-            length(state.map[elem1].regions) != length(state.map[elem2].regions) -> length(state.map[elem2].regions) >= length(state.map[elem1].regions)
-            true ->state.map[elem1].bonus_armies >= state.map[elem2].bonus_armies
+            get_number_of_wastelands(state, super1) != get_number_of_wastelands(state, super2) -> get_number_of_wastelands(state, super1) >= get_number_of_wastelands(state, super2)
+            length(state.map[super1].regions) != length(state.map[super2].regions) -> length(state.map[super2].regions) >= length(state.map[super1].regions)
+            true ->state.map[super1].bonus_armies >= state.map[super2].bonus_armies
          end
      end
    end
 
    defp pick_starting areas, state do
       super_regions = areas |> Enum.map &(get_super_region &1, state)
-      List.first Enum.sort(super_regions, super_region_sort_func(state))
+      elem(List.first(Enum.sort(super_regions, super_region_sort_func(state))), 0)
 
    end
 
