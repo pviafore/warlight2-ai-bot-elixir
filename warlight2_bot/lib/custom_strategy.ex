@@ -19,16 +19,13 @@ defmodule CustomStrategy do
      end
    end
 
-   defp get_own_areas(state) do
-      MapHelpers.get_owned_areas state.ownership, state.bot_name
-   end
 
    defp get_other_areas(state) do
       Enum.map (Enum.filter state.ownership, (fn {_, {player_name, _}} -> player_name != state.bot_name end)), &(elem(&1, 0))
    end
 
    defp place_armies_randomly_at_one_location(state) do
-       own_areas = get_own_areas state
+       own_areas = MapHelper.get_owned_areas state.ownership, state.bot_name
        state.bot_name <> " place_armies " <> pick_random(own_areas) <> " " <> Integer.to_string state.starting_armies
    end
 
@@ -39,7 +36,7 @@ defmodule CustomStrategy do
 
    defp attack_randomly(state) do
 
-       own_areas = get_own_areas state
+       own_areas = MapHelper.get_owned_areas state.ownership, state.bot_name
        big_areas = Enum.filter own_areas, &(GameState.get_armies(state, &1) > 1)
 
        state.bot_name <> " attack/transfer " <> get_attack_strings(state, big_areas)
@@ -57,7 +54,7 @@ defmodule CustomStrategy do
    end
 
    defp get_number_of_turns_until_conquered(state, super_region) do
-      open_regions = get_other_areas state, super_region
+      open_regions = MapHelper.get_unowned_helpers state.ownership, state.bot_name
       regions_of_interest = Enum.filter(open_regions, &(&1 in state[map][super_region]))
       if length regions_of_interest == 0 do
            0
