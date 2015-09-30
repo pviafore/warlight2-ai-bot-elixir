@@ -28,21 +28,22 @@ defmodule CustomStrategy do
        state.bot_name <> " place_armies " <> pick_random(own_areas) <> " " <> Integer.to_string state.starting_armies
    end
 
+   defp get_attack_strings(state, areas) do
+      strings = Enum.map areas, &(&1 <> " " <> pick_random(state.neighbors[&1]) <> " " <> Integer.to_string(GameState.get_armies(state, &1) - 1))
+      Enum.reduce strings, &(&2 <> " " <> &1)
+   end
+
    defp attack_randomly(state) do
 
        own_areas = get_own_areas state
        big_areas = Enum.filter own_areas, &(GameState.get_armies(state, &1) > 1)
-       starting_region = pick_random(big_areas)
-       neighbors = state.neighbors[starting_region]
-       num_armies = Integer.to_string(GameState.get_armies(state, starting_region) - 1)
 
-       state.bot_name <> " attack/transfer " <> starting_region <> " " <> pick_random(neighbors) <> " " <> num_armies
+       state.bot_name <> " attack/transfer " <> get_attack_strings(state, big_areas)
 
    end
 
    defp get_super_region(region, state) do
        {region, elem( (Enum.find state.map, &(region in elem(&1, 1).regions)), 0)}
-
    end
 
    defp get_number_of_wastelands(state, super_region) do
