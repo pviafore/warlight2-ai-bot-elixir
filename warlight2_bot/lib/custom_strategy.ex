@@ -44,7 +44,7 @@ defmodule CustomStrategy do
    end
 
    defp get_super_region(region, state) do
-       {region, elem( (Enum.find state.map, &(region in elem(&1, 1).regions)), 0)}
+       {region, MapHelper.get_super_region(state.map, region)}
    end
 
    defp get_number_of_wastelands(state, super_region) do

@@ -24,4 +24,9 @@ defmodule MapHelpersTest do
    test "should find unowned list where an owner exists" do
       assert [3] == MapHelper.get_unowned_areas([{1, {"nope", 3}}, {2, {"nope", 4}}, {3, {"hello", 5}}], "nope")
    end
+
+   test "can find super region" do
+       assert "5" == MapHelper.get_super_region %{"2" =>%{:regions => [1,3]}, "5" =>%{:regions => [4,6]}}, 6
+       assert "2" == MapHelper.get_super_region %{"2" => %{:regions => [1,3]}, "5" => %{:regions => [4,6]}}, 3
+   end
 end

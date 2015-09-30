@@ -7,4 +7,8 @@ defmodule MapHelper do
    def get_unowned_areas(ownership_list, name) do
       Enum.map (Enum.filter ownership_list, (fn {_, {player_name, _}} -> player_name != name end)), &(elem(&1, 0))
    end
+
+   def get_super_region(map, region) do
+      elem( (Enum.find map, &(region in elem(&1, 1).regions)), 0)
+   end
 end
