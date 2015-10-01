@@ -52,8 +52,8 @@ defmodule CustomStrategy do
    end
 
    defp get_number_of_turns_until_conquered(state, super_region) do
-      open_regions = MapHelper.get_unowned_helpers state.ownership, state.bot_name
-      regions_of_interest = Enum.filter(open_regions, &(&1 in state[map][super_region]))
+      regions_of_interest = MapHelper.get_unowned_areas state.ownership, state.bot_name |>
+                          MapHelper.filter_by_super_region state.map, super_region
       if length regions_of_interest == 0 do
            0
       else
