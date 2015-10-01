@@ -48,9 +48,7 @@ defmodule CustomStrategy do
    end
 
    defp get_number_of_wastelands(state, super_region) do
-      regions = state.map[super_region].regions
-      Enum.filter((Enum.map regions, &(elem(state.ownership[&1], 1))), &(&1 == 6))
-
+      MapHelper.get_number_of_wastelands(state.map, state.ownership, super_region)
    end
 
    defp get_number_of_turns_until_conquered(state, super_region) do
