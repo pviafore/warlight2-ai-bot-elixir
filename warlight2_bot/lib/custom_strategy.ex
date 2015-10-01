@@ -31,7 +31,7 @@ defmodule CustomStrategy do
 
    defp get_attack_strings(state, areas) do
       strings = Enum.map areas, &(&1 <> " " <> pick_random(state.neighbors[&1]) <> " " <> Integer.to_string(GameState.get_armies(state, &1) - 1))
-      Enum.reduce strings, "", &(&2 <> "state.bot_name attack/transfer " <> &1)
+      Enum.reduce strings, "", &(&2 <> state.bot_name <> " attack/transfer " <> &1)
    end
 
    defp attack_randomly(state) do
