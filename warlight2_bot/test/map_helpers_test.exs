@@ -29,4 +29,10 @@ defmodule MapHelpersTest do
        assert "5" == MapHelper.get_super_region %{"2" =>%{:regions => [1,3]}, "5" =>%{:regions => [4,6]}}, 6
        assert "2" == MapHelper.get_super_region %{"2" => %{:regions => [1,3]}, "5" => %{:regions => [4,6]}}, 3
    end
+
+   test "can find number of wastelands in non wasteland superregion " do
+      assert 0 == MapHelper.get_number_of_wastelands %{"2" =>%{:regions => ["1"]}, "5" =>%{:regions => ["2","3"]}}, [{"1", {"nope", 3}}, {"2", {"nope", 4}}, {"3", {"neutral", 6}}], "2"
+      assert 1 == MapHelper.get_number_of_wastelands %{"2" =>%{:regions => ["1"]}, "5" =>%{:regions => ["2","3"]}}, [{"1", {"nope", 3}}, {"2", {"nope", 4}}, {"3", {"neutral", 6}}], "5"
+
+   end
 end

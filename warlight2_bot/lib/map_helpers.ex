@@ -11,4 +11,10 @@ defmodule MapHelper do
    def get_super_region(map, region) do
       elem( (Enum.find map, &(region in elem(&1, 1).regions)), 0)
    end
+
+   def get_number_of_wastelands(map, ownership_list, super_region) do
+      regions = map[super_region].regions
+      owner_lists = Enum.filter ownership_list, &(elem(&1, 0) in regions)
+      length(Enum.filter owner_lists, fn {_, {_, num}} -> num == 6 end)
+   end
 end
