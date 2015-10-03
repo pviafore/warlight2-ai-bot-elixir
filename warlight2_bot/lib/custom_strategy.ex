@@ -26,31 +26,62 @@ defmodule CustomStrategy do
 
    defp place_armies_randomly_at_one_location(state) do
        own_areas = MapHelper.get_owned_areas state.ownership, state.bot_name
+       unowned_areas = MapHelper.get_unowned_areas state.ownership, state.bot_name
+       fringe_areas = Enum.sort_by own_areas, &(length Enum.filter(state.neighbors[&1], fn(x) -> x in unowned_areas end))
        state.bot_name <> " place_armies " <> pick_random(own_areas) <> " " <> Integer.to_string state.starting_armies
    end
 
    defp get_areas_to_attack state, region do
        unowned_regions = MapHelper.get_unowned_areas(state.ownership, state.bot_name)
-       new_areas = Enum.filter state.neighbors[region], &(&1 in unowned_regions)
-       if new_areas != [] do
-           new_areas
-       else
-           state.neighbors[region]
-       end
+       Enum.filter state.neighbors[region], &(&1 in unowned_regions)
+
    end
 
+
+   defp get_attacks(state, region) do
+      areas_to_attack = get_areas_to_attack state,region
+      armies = GameState.get_armies(state, region) - 1
+      if areas_to_attack != [] do
+         attack_foreign_places(state, region, areas_to_attack, armies)
+      else
+         region <> " " <> pick_random(state.neighbors[region]) <> " " <> Integer.to_string(armies)
+      end
+
+   end
+
+   def attack_foreign_places(state, region, areas, armies) when armies <= 0 or areas == [] do
+      []
+   end
+
+   defp get_minimum_attack_strength(their_units) do
+      trunc (their_units / (0.6 * 0.84) + 1)
+   end
+
+   def attack_foreign_places(state, region, [target | areas], armies) do
+      min_strength = get_minimum_attack_strength(GameState.get_armies(state, target))
+      if min_strength > armies do
+         attack_foreign_places(state, region, areas, armies)
+      else
+          [region <> " " <> target <> " " <> Integer.to_string(min_strength)] ++ attack_foreign_places(state, region, areas, armies - min_strength)
+
+      end
+   end
+
+
    defp get_attack_strings(state, areas) do
-      strings = Enum.map areas, &(&1 <> " " <> pick_random(get_areas_to_attack(state, &1)) <> " " <> Integer.to_string(GameState.get_armies(state, &1) - 1))
-      Enum.reduce strings, "", &(&2 <> " " <> state.bot_name <> " attack/transfer " <> &1 <> ",")
+      strings = Enum.map(areas, &(get_attacks state,&1)) |> Enum.filter &(&1 != [])
+      if strings != [] do
+          Enum.reduce List.flatten(strings), "", &(&2 <> state.bot_name <> " attack/transfer " <> &1 <> ", ")
+      else
+          "No Moves"
+      end
    end
 
    defp attack_randomly(state) do
 
        own_areas = MapHelper.get_owned_areas state.ownership, state.bot_name
        big_areas = Enum.filter own_areas, &(GameState.get_armies(state, &1) > 1)
-
        get_attack_strings(state, big_areas)
-
    end
 
    defp get_super_region(region, state) do
